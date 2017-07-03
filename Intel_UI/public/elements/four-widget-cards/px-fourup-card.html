@@ -1,0 +1,67 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-card/px-card.html" />
+
+<script src="../../bower_components/eq.js/dist/eq.min.js"></script>
+
+<link rel="import" href="../../bower_components/px-flexbox-design/css/px-flexbox-design-demo-styles.html" />
+<link rel="import" href="../../bower_components/px-widget-cards/css/px-widget-cards-styles.html">
+<style>
+[class^=widget-] {
+      width: auto !important;
+        display: inline-block;
+        height: 10% !important;
+        padding-bottom: -10px;
+}
+.widgetsContainer{
+  display: flex !important;
+  padding-bottom: 0px !important;
+  padding-top: 15px;
+  padding-left: -15px;
+  }
+  .widgetsContainer >div{
+    flex:auto;
+    display: inline-flex;
+    border-bottom: 1px solid #96a8b2 !important;
+    border-right: 1px solid #96a8b2 !important;
+    border-left: 1px solid #96a8b2 !important;
+
+    border-top: 1px solid #96a8b2 !important;
+
+
+}
+</style>
+
+<dom-module id="px-fourup-card">
+  <template>
+    <!--style include="px-widget-cards-styles"></style-->
+
+    <px-card header-text="{{widgetHeader}}" icon="{{widgetIcon}}">
+      <div class="flex flex--row widgetsContainer">
+        <div class="flex__item--middle">
+          <content select=".widget-1"></content>
+        </div>
+        <div class="flex__item--middle">
+          <content select=".widget-2"></content>
+        </div>
+        <div class="flex__item--middle">
+            <content select=".widget-3"></content>
+          </div>
+          <div class="flex__item--middle">
+            <content select=".widget-4"></content>
+          </div>
+      </div>
+    </px-card>
+  </template>
+</dom-module>
+<script>
+  Polymer({
+    is: 'px-fourup-card',
+    attached: function() {
+      //delay the element query from executing until px-card dimension is determined.
+      this.async(function(){
+        eqjs.refreshNodes();
+        eqjs.query(undefined, true);
+      },1);
+    }
+  });
+</script>

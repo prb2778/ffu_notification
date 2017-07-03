@@ -1,0 +1,23 @@
+---
+applications:
+  - name: <application Name>
+    buildpack: java_buildpack
+    path: target/mail.jar #make sure jar name matches artifactID and version
+    services:
+     - <UAA-service>
+     - <TS-service>
+     - <asset-service>
+     - <redis-service>
+     - <acs-service>
+
+env:
+    SPRING_PROFILES_ACTIVE : cloud,clouddev
+    predix_oauthClientId: <clientid:clientsecret>
+    predix_oauthRestHost: <UAA URL>
+    trustedIssuerIdsRegexPattern: ^https://(.*\\.)?<UAA URL>/oauth/token$
+    accessTokenEndpointUrl: https://<UAA URL>/oauth/token
+    predix_asset_name: <asset-service>
+    predix_timeseries_name: <TS-service>
+    clientId : <UAA-client-id name>
+    clientSecret: <uaa-client-secret>
+    

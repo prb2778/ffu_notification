@@ -1,0 +1,19 @@
+{
+  "development": {
+    "note": "Out of the box, the predix-webapp-starter app uses mock data, so these values are not required.  Set these values for connecting to real Predix services.",
+    "uaaURL": "https://61a46d35-834f-47fd-beea-5dd1c1c5bbec.predix-uaa.run.aws-usw02-pr.ice.predix.io",
+    "base64ClientCredential": "S2VudC1Eb2pvLUNsaWVudDpJbnRlbERvam8=",
+    "loginBase64ClientCredential": "S2VudC1Eb2pvLUNsaWVudDpJbnRlbERvam8=",
+    "appURL": "http://localhost:5000",
+    "timeseriesURL": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+    "timeseriesZoneId": "ed578c7f-b571-49f7-bdd5-2b6fd87b961b",
+    "assetURL": "",
+    "assetZoneId": "",
+    "windServiceURL": "{URL of the microservice <your-name>-winddata-timeseries-service}, e.g.  https://your-name-winddata-timeseries-service.run.asw-usw02-pr.predix.io",
+    "redisServiceURL": "https://Intel-MVP-app.run.aws-usw02-pr.ice.predix.io",
+    "websocketServerURL": "/livestream",
+    "rmdDatasourceURL": "{URL of your RMD datasource microservice}",
+	"inteltsqueryURL": "https://inteltsquery-preinterpretative-reverie.run.aws-usw02-pr.ice.predix.io",
+    "rmdDocsURL": "https://raw.githubusercontent.com/PredixDev/predix-rmd-ref-app/master/README.md"
+  }
+}

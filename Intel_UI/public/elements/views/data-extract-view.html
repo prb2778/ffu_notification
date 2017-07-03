@@ -1,0 +1,251 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-view-header/px-view-header.html">
+<link rel="import" href="../../bower_components/px-card/px-card.html">
+<link rel="import" href="../../bower_components/px-data-table/px-data-table.html" />
+<link rel="import" href="../../bower_components/px-vis-timeseries/px-vis-timeseries.html" />
+<link rel="import" href="../../bower_components/px-datetime-picker/px-datetime-picker.html"/>
+<link rel="import" href="../../bower_components/paper-input/paper-input.html"/>
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/px-widget-cards/px-twoup.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/px-modal/px-modal.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<dom-module id="data-extract-view">
+<template>
+<style>
+      :host {
+        display: block;
+		/*--px-tab-border-color: none;*/
+		--px-tab-background-color: none;
+		--px-tab-background-color--selected:  none;
+		--px-tab-border-width-selected:5px;
+
+      }
+      .topCard{
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+      }
+      .topCard div{
+        flex-grow: 1;
+      }
+      .viewSwitch{
+        text-align: right;
+      }
+      .viewSwitch a{
+        color: #000;
+        padding:  10px;
+        text-decoration: none;
+      }
+      .viewSwitch a:hover{
+        opacity: .75;
+      }
+      .topCard h1{
+        margin-top: 0;
+        padding-top:  10px;
+      }
+      paper-button {
+        background: #00ABC8 ;
+        color: #fff;
+        display: block;
+        clear: both;
+        margin:  0 auto;
+        max-width: 200px;
+        text-align: center;
+      }
+      .px-twoup {
+        border-bottom: 0.75px solid darkgrey !important;
+      }
+      .scroll-container {
+        height: 250px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        white-space: nowrap;
+        width: auto;
+      }
+      </style>
+      <iron-ajax
+        id="TagGet"
+        auto
+        url="/timeSeriesQuery/tags"
+        method="GET"
+        content-type="application/json"
+        handle-as="json"
+        on-response="handleAjaxPostResponse"
+        on-error="handleAjaxPostError"
+        last-response={{tagList}}
+        >
+      </iron-ajax>
+      <iron-ajax
+        id="AjaxPost"
+        url="/timeSeriesQuery/datapoints"
+        method="POST"
+        content-type="application/json"
+        handle-as="json"
+        on-response="handleAjaxPostResponse"
+        on-error="handleAjaxPostError"
+        >
+      </iron-ajax>
+
+        <px-card header-text='' class="topCard">
+        <h1> Data Extraction </h1>
+        </px-card>
+        <px-card header-text='Parameters' chevron>
+          <px-twoup id="widget-2">
+            <div class='widget-1'>
+              <div><div>Start time</div>
+                <px-datetime-picker date-format="YYYY/MM/DD" time-format="HH:mm:ss" time-zone="UTC" show-time-zone="abbreviatedText" date-time={{starttime}}></px-datetime-picker>
+              </div>
+              <div><div>End time</div>
+                <px-datetime-picker date-format="YYYY/MM/DD" time-format="HH:mm:ss" time-zone="UTC" show-time-zone="abbreviatedText" date-time={{endtime}}></px-datetime-picker>
+              </div>
+            </div>
+            <div class='widget-2'>
+              <px-modal btn-modal-positive="Ok" modal-heading="Select Tags" btn-modal-positive-clicked-event-name="buttonOnClick">
+                <button class='btn btn--primary modal-trigger'>Select Tags</button>
+                <px-card class="scroll-container">
+                  <paper-listbox id="lbTags" attr-for-selected='item-name' selectedItems={{selectedTags}} multi>
+                    <template is="dom-repeat" items="{{tagList.results}}">
+                        <paper-item item-name={{item}}>
+                            {{item}}
+                        </paper-item>
+                    </template>
+                  </paper-listbox>
+                </px-card>
+              </px-modal>
+              <paper-input label="tag" value={{tag}}>
+                <iron-icon icon="maps:local-offer" slot="prefix"></iron-icon>
+              </paper-input>
+              <paper-input label="limit" value={{limit}}>
+                <iron-icon icon="icons:swap-vert" slot="prefix"></iron-icon>
+              </paper-input>
+              <!--<paper-input label="units" value={{units}}>
+                <iron-icon icon="icons:toll" slot="prefix"></iron-icon>
+              </paper-input> -->
+            </div>
+          </px-twoup>
+          <paper-button id="btnGen" on-click="onClick" raised>Generate CSV</paper-button>
+        </px-card>
+        <px-card header-text='Results' chevron>
+        </px-card>
+    </template>
+  <script>
+    var myValues = [];
+
+    Polymer({
+      is: 'data-extract-view',
+      listeners: {
+         'buttonOnClick': 'buttonOnClick',
+       },
+      properties:
+      {
+        selectedTags:
+        {
+          type:Object,
+          observer: 'onTagSelected'
+        },
+        tagList:
+        {
+          type:Object,
+          notify:true
+        },
+        tag:
+        {
+          type: String,
+          value: '[ "No Tags Selected"]'
+        },
+        limit:
+        {
+          type: Number,
+          value: 10000
+        },
+        units:
+        {
+          type: String,
+          value: '["GESN821826__7778889"]'
+        },
+        starttime:
+        {
+          type: String,
+          value: '2017-06-20T19:07:41.000Z'
+        },
+        endtime:
+        {
+          type: String,
+          value: '2017-06-20T19:07:51.000Z'
+        }
+      },
+      ready: function() {
+        this.softFailures = [];
+        },
+        contextChanged: function(newContext, oldContext){
+            // this is where you will receive updates to the context
+        },
+        deckStateChanged: function(newDeckState, oldDeckState){
+            // this is where you will receive updates from other cards
+        },
+        onClick: function(){
+          console.log('clicked');
+          console.log(this.tag);
+          console.log(this.limit);
+          console.log(this.units);
+          console.log(this.starttime);
+          console.log(this.endtime);
+          this.$.AjaxPost.body =
+          {
+            "tag": JSON.parse(this.tag),
+            "limit": parseInt(this.limit),
+            "starttime": new Date(this.starttime).getTime(),
+            "endtime": new Date(this.endtime).getTime()
+          };
+          this.$.AjaxPost.generateRequest();
+        },
+        handleAjaxPostResponse: function(data){
+          console.log('Response');
+          console.log(data.detail.response);
+          //var first = true;
+          //var object = data.detail.response
+          // for (var property in object)
+          // {
+          //   if (object.hasOwnProperty(property))
+          //   {
+          //     if (first)
+          //     {
+          //       first = false;
+          //       myValues = object[property].tags[0].results[0].values;
+          //     }
+          //     console.log(object[property].tags[0].results[0].values);
+          //   }
+          // }
+        },
+        handleAjaxPostError: function(e)
+        {
+          console.log('Error');
+          console.log(e);
+        },
+        onTagSelected: function(newValue, oldValue)
+        {
+          console.log('tag');
+          console.log(this.selectedTags);
+        },
+        buttonOnClick: function(e) {
+          console.log("yep");
+          var items = this.$.lbTags.selectedItems;
+          var output = [];
+          for (var i = 0; i< items.length; i++)
+          {
+            console.log(items[i].itemName);
+            output.push(items[i].itemName);
+          }
+          this.tag = JSON.stringify(output);
+        }
+    });
+
+  </script>
+
+</dom-module>

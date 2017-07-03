@@ -1,0 +1,114 @@
+Getting env variables for app locomotive-dataingestion-service-asha in org Predix-Training / space Training3 as asha.yadav@ge.com...
+OK
+
+System-Provided:
+{
+ "VCAP_SERVICES": {
+  "predix-asset": [
+   {
+    "credentials": {
+     "instanceId": "160fbeaf-1e6e-4499-922c-fea0525e548e",
+     "uri": "https://predix-asset.run.aws-usw02-pr.ice.predix.io",
+     "zone": {
+      "http-header-name": "Predix-Zone-Id",
+      "http-header-value": "160fbeaf-1e6e-4499-922c-fea0525e548e",
+      "oauth-scope": "predix-asset.zones.160fbeaf-1e6e-4499-922c-fea0525e548e.user"
+     }
+    },
+    "label": "predix-asset",
+    "name": "asha-locomotive-asset",
+    "plan": "Tiered",
+    "tags": []
+   }
+  ],
+  "predix-timeseries": [
+   {
+    "credentials": {
+     "ingest": {
+      "uri": "wss://gateway-predix-data-services.run.aws-usw02-pr.ice.predix.io/v1/stream/messages",
+      "zone-http-header-name": "Predix-Zone-Id",
+      "zone-http-header-value": "1c84e446-aef6-44e9-9c38-f3f3d0b9ff7b",
+      "zone-token-scopes": [
+       "timeseries.zones.1c84e446-aef6-44e9-9c38-f3f3d0b9ff7b.user",
+       "timeseries.zones.1c84e446-aef6-44e9-9c38-f3f3d0b9ff7b.ingest"
+      ]
+     },
+     "query": {
+      "uri": "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+      "zone-http-header-name": "Predix-Zone-Id",
+      "zone-http-header-value": "1c84e446-aef6-44e9-9c38-f3f3d0b9ff7b",
+      "zone-token-scopes": [
+       "timeseries.zones.1c84e446-aef6-44e9-9c38-f3f3d0b9ff7b.user",
+       "timeseries.zones.1c84e446-aef6-44e9-9c38-f3f3d0b9ff7b.query"
+      ]
+     }
+    },
+    "label": "predix-timeseries",
+    "name": "asha-locomotive-timeseries",
+    "plan": "Bronze",
+    "tags": [
+     "timeseries",
+     "time-series",
+     "time series"
+    ]
+   }
+  ],
+  "predix-uaa-training": [
+   {
+    "credentials": {
+     "issuerId": "https://2e93f1db-9f2c-43e9-9fa9-7ba816c8f01c.predix-uaa-training.run.aws-usw02-pr.ice.predix.io/oauth/token",
+     "uri": "https://2e93f1db-9f2c-43e9-9fa9-7ba816c8f01c.predix-uaa-training.run.aws-usw02-pr.ice.predix.io",
+     "zone": {
+      "http-header-name": "X-Identity-Zone-Id",
+      "http-header-value": "2e93f1db-9f2c-43e9-9fa9-7ba816c8f01c"
+     }
+    },
+    "label": "predix-uaa-training",
+    "name": "asha-locomotive-uaa",
+    "plan": "Free",
+    "tags": []
+   }
+  ]
+ }
+}
+
+{
+ "VCAP_APPLICATION": {
+  "application_id": "235088f1-34c1-48a4-9283-f239a0a15055",
+  "application_name": "locomotive-dataingestion-service-asha",
+  "application_uris": [
+   "locomotive-dataingestion-service-asha.run.aws-usw02-pr.ice.predix.io"
+  ],
+  "application_version": "34134952-3952-480b-8d4a-2a95c7f491a8",
+  "limits": {
+   "disk": 1024,
+   "fds": 16384,
+   "mem": 1024
+  },
+  "name": "locomotive-dataingestion-service-asha",
+  "space_id": "4b1d71fb-0296-4639-b9ab-898ca3749048",
+  "space_name": "Training3",
+  "uris": [
+   "locomotive-dataingestion-service-asha.run.aws-usw02-pr.ice.predix.io"
+  ],
+  "users": null,
+  "version": "34134952-3952-480b-8d4a-2a95c7f491a8"
+ }
+}
+
+User-Provided:
+SPRING_PROFILES_ACTIVE: cloud,clouddev
+accessTokenEndpointUrl: https://328ea004-f3d2-464b-bbf8-8acbd5fa4575.predix-uaa-training.run.aws-usw02-pr.ice.predix.io/oauth/token
+clientId: client
+clientSecret: client
+predixWebSocketURI: wss://websocket-server-new-release.run.aws-usw02-pr.ice.predix.io/livestream/messages
+predix_asset_name: locomotive-asset
+predix_oauthClientId: client:client
+predix_oauthRestHost: 328ea004-f3d2-464b-bbf8-8acbd5fa4575.predix-uaa-training.run.aws-usw02-pr.ice.predix.io
+predix_timeseries_name: locomotive-timeseries
+trustedIssuerIdsRegexPattern: ^https://(.*\\.)?328ea004-f3d2-464b-bbf8-8acbd5fa4575.predix-uaa-training.run.aws-usw02-pr.ice.predix.io/oauth/token$
+
+No running env variables have been set
+
+No staging env variables have been set
+

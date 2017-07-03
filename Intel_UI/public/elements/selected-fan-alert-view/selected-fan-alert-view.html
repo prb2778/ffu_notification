@@ -1,0 +1,150 @@
+<link rel="import" href="../../bower_components/px-view-header/px-view-header.html">
+<link rel="import" href="../../bower_components/px-card/px-card.html">
+<link rel="import" href="../../bower_components/px-widget-cards/px-twoup.html" />
+<link rel="import" href="../../bower_components/px-data-table/px-data-table.html" />
+<link rel="import" href="../../bower_components/px-vis-timeseries/px-vis-timeseries.html" />
+
+
+<dom-module id="selected-fan-alert-view">
+<template>
+<style>
+      :host {
+        display: block;
+		/*--px-tab-border-color: none;*/
+		--px-tab-background-color: none;
+		--px-tab-background-color--selected:  none;
+		--px-tab-border-width-selected:5px;
+
+        padding: 16px;
+      }
+
+      .topCard{
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+      }
+      .topCard div{
+        flex-grow: 1;
+      }
+      .viewSwitch{
+        text-align: right;
+      }
+      .viewSwitch a{
+        color: #000;
+        padding:  10px;
+        text-decoration: none;
+      }
+      .viewSwitch a:hover{
+        opacity: .75;
+      }
+      .topCard h1{
+        margin-top: 0;
+        padding-top:  10px;
+      }
+    </style>
+    <px-card header-text="Intel Fan Filter Unit Details" icon="fa-table">
+      <div class="flex flex--row">
+        <div class="flex flex--left areatool-title">{{areaSelected}} - Tool {{toolSelected}} </div>
+        <div class="viewSwitch">
+          <!--a href="#/selected-fan" class="fa fa-chevron-circle-left fa-2x"></a>
+          <a href="#/selected-fan" class="fa fa-chevron-circle-right fa-2x"></a>
+          <a href="#/selected-fan-ts" class="fa fa-line-chart fa-2x"></a-->
+          <iron-icon on-click="_resetStatus" class="iconButton" icon="fa:fa-bell-slash"></iron-icon>
+          <iron-icon class="iconButton" icon="fa:fa-chevron-circle-left"></iron-icon>
+          <iron-icon class="iconButton" icon="fa:fa-chevron-circle-right"></iron-icon>
+          <iron-icon class="iconButton" icon="fa:fa-line-chart"></iron-icon>
+        </div>
+      </div>
+      <div class="flex flex--center tool-title">{{fanSelected}} </div>
+
+      <div class="flex flex--row flex--center">
+         <px-spinner id="spinnerODV" size="75"></px-spinner>
+      </div>
+      <template is="dom-if" if="[[noData]]" >
+        <div class="flex flex--center"><legend class="no-results-title">No Results</legend></div>
+      </template>
+      <template is="dom-if" if="[[showTables]]" >
+        <div class="flex flex--row flex--justify">
+          <div class="widgetContainer">
+            <div class='widget-1'>
+              <h2> Soft Failures </h2>
+              <px-data-table table-data='{{softData}}' language="en" striped="true" filterable="true" sortable="true" single-select="true" include-all-columns="true" hide-pagination-control="true"></px-data-table>
+            </div>
+          </div>
+
+          <div class="widgetContainer">
+            <div class='widget-2'>
+             <h2> Hard Failures </h2>
+              <px-data-table table-data='{{hardData}}' language="en" striped="true" filterable="true" sortable="true" single-select="true" include-all-columns="true" hide-pagination-control="true"></px-data-table>
+            </div>
+          </div>
+      </template>
+      <div id="timeseriesContainer">
+        <px-vis-timeseries prevent-resize="true" debounce-resize-timing="250" width="900" height="550" progressive-rendering-points-per-frame="16000" progressive-rendering-min-frames="1" chart-horizontal-alignment="center" chart-vertical-alignment="center" margin='{"top":30,"bottom":60,"left":65,"right":65}' show-tooltip="true" tooltip-config='{}' register-config='{"type":"vertical","width":200}' selection-type="xy" chart-data='[{"x":1397102460000,"DE Base":11.4403,"DE Avg":96.5,"DE Alarm":0.56},{"x":1397139660000,"DE Base":13.1913,"DE Avg":96.5,"DE Alarm":0.4},{"x":1397177400000,"DE Base":12.8485,"DE Avg":96.5,"DE Alarm":0.43},{"x":1397228040000,"DE Base":10.975,"DE Avg":96.5,"DE Alarm":0.33,"y3":0.33},{"x":1397248260000,"DE Base":12.9377,"DE Avg":96.5,"DE Alarm":0.47},{"x":1397291280000,"DE Base":13.3795,"DE Avg":96.5,"DE Alarm":0.41},{"x":1397522940000,"DE Base":16.4446,"DE Avg":96.5,"DE Alarm":0.32},{"x":1397542800000,"DE Base":12.2771,"DE Avg":96.5,"DE Alarm":0.35},{"x":1397640960000,"DE Base":13.0709,"DE Avg":96.5,"DE Alarm":0.34},{"x":1397663100000,"DE Avg":88.8,"DE Alarm":0.28},{"x":1397700000000,"DE Base":12.6198,"DE Avg":95.2,"DE Alarm":0.49},{"x":1397753040000,"DE Base":11.0486,"DE Avg":96.5,"DE Alarm":0.35},{"x":1397772540000,"DE Base":14.6892,"DE Avg":96.5,"DE Alarm":0.21},{"x":1397794860000,"DE Base":14.3738,"DE Avg":96.5,"DE Alarm":0.42},{"x":1397813580000,"DE Base":10.4259,"DE Avg":76.5,"DE Alarm":0.58},{"x":1397890680000,"DE Base":13.4261,"DE Avg":96.5,"DE Alarm":0.37},{"x":1397932020000,"DE Base":13.0062,"DE Avg":96.5,"DE Alarm":0.27},{"x":1397973480000,"DE Base":14.475,"DE Avg":96.5,"DE Alarm":0.35},{"x":1398009240000,"DE Avg":96.5,"DE Alarm":0.24},{"x":1398035760000,"DE Base":15.9555,"DE Avg":96.5},{"x":1398075840000,"DE Base":14.535,"DE Avg":16},{"x":1398102960000,"DE Base":12.3671,"DE Avg":96.5},{"x":1398126240000,"DE Base":12.4245,"DE Avg":96.5},{"x":1398195060000,"DE Base":12.0836,"DE Avg":96.5,"DE Alarm":0.31},{"x":1398219120000,"DE Base":15.3137,"DE Avg":96.5,"DE Alarm":0.34},{"x":1398239220000,"DE Base":13.7978,"DE Avg":96.5,"DE Alarm":0.32},{"x":1398617940000,"DE Avg":55.4,"DE Alarm":0.16},{"x":1398638520000,"DE Base":15.0664,"DE Avg":85.7,"DE Alarm":0.41},{"x":1398691860000,"DE Base":13.504,"DE Avg":96.5,"DE Alarm":0.31},{"x":1398714240000,"DE Base":13.7263,"DE Avg":96.5,"DE Alarm":0.36},{"x":1398807540000,"DE Base":14.57,"DE Avg":96.5,"DE Alarm":0.44},{"x":1398858180000,"DE Base":13.9641,"DE Avg":96.5,"DE Alarm":0.25},{"x":1398879420000,"DE Base":12.5418,"DE Avg":96.5,"DE Alarm":0.42},{"x":1398920880000,"DE Base":14.8822,"DE Avg":96.5,"DE Alarm":0.22},{"x":1398956340000,"DE Base":15.2676,"DE Avg":96.5,"DE Alarm":0.42},{"x":1398995280000,"DE Avg":20.3,"DE Alarm":0.16}]' series-config='{"DE Base":{"name":"DE Base","x":"x","y":"DE Base","yAxisUnit":"F","axis":{"id":"axis1","side":"left","number":"1"}},"DE Avg":{"name":"DE Avg","x":"x","y":"DE Avg","yAxisUnit":"Hz","axis":{"id":"axis2","side":"right","number":"1"}},"DE Alarm":{"name":"DE Alarm","x":"x","y":"DE Alarm","yMin":0.11,"yMax":1.1,"yAxisUnit":"C","axis":{"id":"axis3","side":"left","number":"2"}}}' chart-extents='{"x":["dynamic","dynamic"],"y":["dynamic","dynamic"]}' event-data='[{"id":"123","time":1398714240000,"label":"Recalibrate"},{"id":"456","time":1397640960000,"label":"Fan start"},{"id":"789","time":1398126240000,"label":"Fan stop"},{"id":"333","time":1398956340000,"label":"Default"}]' event-config='{"Recalibrate":{"color":"blue","icon":"fa-camera","type":"fa","offset":[0,0],"lineColor":"red","lineWeight":0},"Fan start":{"color":"green","icon":"","type":"unicode","offset":[1,0]},"Fan stop":{"icon":"ge_logo.png","type":"image","offset":[0,-20],"size":"20"}}' threshold-data='[{"for":"DE Base","type":"max","value":15.4784},{"for":"DE Base","type":"min","value":7.6531},{"for":"DE Base","type":"mean","value":15.330657585139331},{"for":"DE Avg","type":"mean","value":75},{"for":"DE Avg","type":"quartile","value":17}]' display-threshold-title="true" threshold-config='{"max":{"color":"red","dashPattern":"5,0","title":"MAX","showThresholdBox":true,"displayTitle":true}}' DE Base-config='{"title":"Date"}' DE Avg-config='{"title":"RPMs","titleTruncation":false,"unit":"x1000rpm","axis1":{"title":"Temperature","titleTruncation":false,"unit":"C"}}' dynamic-menu-config='[{"name":"Delete","action":"function(data) {var conf = this.seriesConfig;delete conf[data.additionalDetail.name];this.set(\"seriesConfig\", {}); this.set(\"seriesConfig\", conf);}","eventName":"delete","icon":"fa-trash"},{"name":"Bring To Front","action":"function(data) {this.set(\"serieToRedrawOnTop\", data.additionalDetail.name);}","eventName":"bring-to-front","icon":"fa-arrow-up"}]' toolbar-config='{"config":{"advancedZoom":true,"pan":true,"tooltip":true,"logHover":{"buttonGroup":2,"tooltipLabel":"The submenu item of this menu will define custom mouse interaction","icon":"fa-leaf","subConfig":{"customClick":{"icon":"fa-coffee","buttonGroup":3,"tooltipLabel":"define some custom mouse interactions on chart","eventName":"my-custom-click","actionConfig":{"mousedown":"function(mousePos) { console.log(\"custom click on chart. Context is the chart. Mouse pos is available: \" + JSON.stringify(mousePos))}","mouseup":"function(mousePos) { console.log(\"custom action on mouse up the chart \" + JSON.stringify(mousePos));}","mouseout":"function(mousePos) { console.log(\"custom action on mouse out the chart \" + JSON.stringify(mousePos));}","mousemove":"function(mousePos) { console.log(\"custom action on hovering the chart \");}"}},"customClick2":{"buttonGroup":3,"icon":"fa-fire-extinguisher","tooltipLabel":"Remove all custom interactions","actionConfig":{"mousedown":null,"mouseup":null,"mouseout":null,"mousemove":null}}}}}}' navigator-config='{"xAxisConfig":{"tickFormat":"%b %d"}}'>
+        </px-vis-timeseries>
+      </div>
+	  </px-card>
+    </template>
+  <script>
+    Polymer({
+      is: 'selected-fan-alert-view',
+      properties: {
+        softData:{
+          type:Object,
+          value:[]
+        },
+        hardData:{
+          type:Object,
+          value:[]
+        },
+        noData:{
+          type:Boolean
+        },
+        areaSelected:{
+          type: String,
+          notify: true
+        },
+        toolSelected:{
+          type: String,
+          notify: true
+        },
+        fanSelected:{
+          type: String,
+          notify: true
+        }
+      },
+      ready: function() {
+        this.softFailures = [
+        {"result":"Timestamp","value":"2017-03-12 11:43:21 (hh:mm:ss)","units":""},
+        {"result":"Sensor Health","value":"Good","units":""},
+        {"result":"Status","value":"Bad","units":""},
+        {"result":"DE Base","value":"0.4712","units":"g"},
+        {"result":"DE Avg","value":"0.123456","units":"g"},
+        {"result":"DE Alarm","value":"11.9320","units":""},
+        {"result":"X Acceleration Average","value":"0.64212","units":"g"},
+        {"result":"Y Acceleration Average","value":"0.84712","units":"g"},
+        {"result":"Z Acceleration Average","value":"0.63965","units":"g"},
+
+        ];
+         // this is where you can do some initialization of your card
+        },
+        contextChanged: function(newContext, oldContext){
+            // this is where you will receive updates to the context
+        },
+        deckStateChanged: function(newDeckState, oldDeckState){
+            // this is where you will receive updates from other cards
+        },
+        isToolA01: function(item) {
+            return item.tool == "ToolA01";
+        },
+        isToolA02: function(item) {
+            return item.tool == "ToolA02";
+        },
+        isToolA03: function(item) {
+            return item.tool == "ToolA03";
+        },
+    });
+
+  </script>
+
+</dom-module>

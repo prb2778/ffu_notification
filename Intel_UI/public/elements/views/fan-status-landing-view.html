@@ -1,0 +1,791 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-view-header/px-view-header.html">
+<link rel="import" href="../../bower_components/px-card/px-card.html">
+<link rel="import" href="../four-widget-cards/px-fourup-card.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html"/>
+<link rel="import" href="../css/fan-status-landing-view-styles.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html"/>
+<link rel="import" href="../../bower_components/px-widget-cards/px-twoup.html" />
+<link rel="import" href="../../bower_components/px-data-table/px-data-table.html" />
+<link rel="import" href="../../bower_components/px-spinner/px-spinner.html" />
+<link rel="import" href="../../bower_components/px-flexbox-design/css/px-flexbox-design-demo-styles.html" />
+<link rel="import" href="../../bower_components/px-vis-timeseries/px-vis-timeseries.html" />
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html" />
+<link rel="import" href="../kpi-bar-alerts/kpi-bar-alerts.html">
+<link rel="import" href="../selected-fan-alert-view/selected-fan-alert-view.html">
+
+
+<dom-module id="fan-status-landing-view">
+<template>
+<style include="fan-status-landing-view-styles" is="custom-style"></style>
+<style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+
+<style is="custom-style" include="px-flexbox-design-demo-styles"></style>
+<style>
+      :host {
+        display: block;
+		--px-tab-border-color: none;
+		--px-tab-background-color: none;
+		--px-tab-background-color--selected:  none;
+		--px-tab-border-width-selected:5px;
+
+      }
+
+
+      /*iron-pages div.fanSet, div.fanStatusOverview{
+      	display: flex;
+      	flex-wrap: wrap;
+      	flex-direction: row;
+
+      }*/
+      iron-pages .h2{
+      		font-size: 18px;
+      		font-weight: bold;
+      	}
+      /*iron-pages div.fanUnit, div.fanStatusOverview px-kpi{
+      	flex-grow: 1;
+      }*/
+      iron-pages div.fanUnit a{
+  	    border: 1px solid #748b99;
+  	    border-radius: 5px;
+  	    color: #000;
+  	    padding: 0.75em;
+  	    text-align: center;
+  	    text-decoration: none;
+        cursor:pointer;
+	    }
+	    iron-pages div.fanUnit a:hover{
+	 	    opacity: .75;
+		  }
+	    iron-pages div.fanUnit .noError a{
+      	background: #2782A8;
+      	color: #fff;
+      }
+      iron-pages div.fanUnit .lowWarn a{
+      	background: #ff7518;
+      	color: #fff;
+      }
+      iron-pages div.fanUnit .highWarn a{
+      	background: #E53838;
+      	color: #fff;
+      }
+      iron-pages div.fanUnit{
+        display: inline-flex;
+        margin-right: 10px;
+        margin-top: 15px;
+        margin-bottom: 30px;
+        width: 100px;
+      }
+      div.areaButtons > button.noErrorButton {
+         background: #2782A8 !important;
+         color: #fff;
+      }
+      div.areaButtons > button.lowWarnButton{
+         background: #ff7518 !important;
+         color: #fff;
+      }
+      div.areaButtons button.highWarnButton {
+         background: #E53838;
+         color: #fff;
+      }
+      div.areaButtons{
+          padding-left: 20px;
+          border-bottom: 1px solid #96a8b2;
+          flex: initial;
+          margin-left: -20px;
+          margin-right: -20px;
+          padding-bottom: 20px;
+        }
+        .kpi-bar-div{
+          position: absolute !important;
+          top: 8px;
+          right: -210px !important;
+        }
+        div.widgetContainer{
+          width: 50%;
+          margin-top: -10px;
+        }
+        div.widgetContainer .widget-1{
+          padding-right: 30px;
+
+        }
+        div.widgetContainer .widget-2{
+          padding-left: 30px;
+
+        }
+        .viewSwitch a{
+          color: #000;
+          padding:  10px;
+          text-decoration: none;
+        }
+        div.viewSwitch{
+          float: right;
+          margin-top: 10px;
+        }
+        .area-title{
+        margin-top: 10px;
+        color: #1b2a33;
+        font-size: 2rem;
+        font-weight: bold;
+      }
+      .tool-title{
+      /*margin-top: 10px;*/
+      color: #1b2a33;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .areatool-title{
+      margin-top: 10px;
+      color: #1b2a33;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    iron-icon.iconButton{
+        width: 2rem;
+        height: 1.5rem;
+        cursor: pointer;
+    }
+    iron-icon.iconButton:hover{
+      /*opacity: .75;*/
+      color: #2886af;
+    }
+    .no-results-title{
+      font-size: 1rem;
+      padding-top: 10px;
+      padding-bottom: 10px;
+
+    }
+    div#timeseriesContainer{
+      border-top: 1px solid #96a8b2;
+      margin-top: 20px;
+      padding-top: 20px;
+    }
+    </style>
+
+
+
+        <px-card header-text='Filter Fan Units Status' icon="fa-bell">
+          <div class="kpi-bar-div flex flex--row flex--center">
+             <kpi-bar-alerts datapoints="[[kpisData]]"
+              kpi-bar-wrapper-state="[[kpiBarWrapperState]]">
+            </kpi-bar-alerts>
+          </div>
+          <div class="areaButtons">
+          <template is="dom-repeat" items="{{areasObject}}">
+            <button class$="btn {{_getButtonClass(item.value)}}" id="{{_getId(item.value)}}" name="{{item.value}}" on-click="_selectAreaPage">{{item.value}}</button>
+            </template>
+          </div>
+            <iron-pages class="areaPages" id="iron-pages" selected="[[pageName]]" attr-for-selected="page-name">
+              <template is="dom-repeat" items="{{areasObject}}" as="areas">
+                <div page-name="{{areas.value}}" id="{{areas.value}}">
+                  <div class="flex flex--center">
+                    <div class="area-title">{{areas.value}}</div>
+                  </div>
+                  <div>
+                    <!--px-fourup-card id="widget-4" >
+                      <div class='widget-1'>
+                        <span>
+                          <px-kpi title="Alerts" value="{{highWarns}}" status-icon="exclamation-triangle" status-color="red"></px-kpi>
+                        </span>
+                      </div>
+                      <div class='widget-2'>
+                        <span>
+                          <px-kpi title="Warnings" value="{{lowWarns}}" status-icon="exclamation-triangle" status-color="#ff7518"></px-kpi>
+                        </span>
+                      </div>
+                      <div class='widget-3'>
+                        <span>
+                          <px-kpi title="Good" value="{{noErrors}}" status-icon="check-circle" status-color="blue"></px-kpi>
+                        </span>
+                      </div>
+                      <div class='widget-4'>
+                        <span>
+                          <px-kpi title="Total" value="{{total}}"></px-kpi>
+                        </span>
+                      </div>
+
+                    </px-fourup-card-->
+
+                  </div>
+                  <template is="dom-repeat" items="{{_getTools(areas.value)}}" as="toolsInfo">
+                    <div class="flex flex--left">
+                      <div class="tool-title">Tool {{toolsInfo}}</div>
+                    </div>
+  				        	<div class="fanSet">
+  					        	<template is="dom-repeat" id="fans" items="{{_getNames(areas.value,toolsInfo)}}" as="fanItems">
+  							        <div class="fanUnit">
+  							          <!--span class$="{{fanItems.errorStatus}}"><a href="#/selected-fan" value="{{fanItems.name}}" tool="{{toolsInfo}}">{{fanItems.name}}</a></span-->
+                          <span class$="{{fanItems.errorStatus}}"><a id="{{fanItems.name}}" on-click="_selectedFan" value="{{fanItems.name}}" tool="{{toolsInfo}}">{{fanItems.name}}</a></span>
+  							        </div>
+  						    	</template>
+  				    		</div>
+                  </template>
+                </div>
+                </template>
+                <div page-name="selectedFanPage" id="selectedFanPage">
+                  <!--selected-fan-alert-view class="" area-selected="{{areaSelected}}" tool-selected="{{toolSelected}}" fan-selected="{{fanSelected}}" no-data="{{noData}}" hard-data="{{hardData}}" soft-data="{{softData}}"></selected-fan-alert-view-->
+
+                  <div class="flex flex--row">
+                    <div class="flex flex--left areatool-title">{{areaSelected}} - Tool {{toolSelected}} </div>
+                    <div class="viewSwitch">
+                      <!--a href="#/selected-fan" class="fa fa-chevron-circle-left fa-2x"></a>
+                      <a href="#/selected-fan" class="fa fa-chevron-circle-right fa-2x"></a>
+                      <a href="#/selected-fan-ts" class="fa fa-line-chart fa-2x"></a-->
+                      <iron-icon on-click="_resetStatus" class="iconButton" icon="fa:fa-bell-slash"></iron-icon>
+                      <iron-icon class="iconButton" icon="fa:fa-chevron-circle-left"></iron-icon>
+                      <iron-icon class="iconButton" icon="fa:fa-chevron-circle-right"></iron-icon>
+                      <iron-icon class="iconButton" icon="fa:fa-line-chart"></iron-icon>
+                    </div>
+                  </div>
+                  <div class="flex flex--center tool-title">{{fanSelected}} </div>
+
+                	<div class="flex flex--row flex--center">
+                	   <px-spinner id="spinnerODV" size="75"></px-spinner>
+                	</div>
+                  <template is="dom-if" if="[[noData]]" >
+                    <div class="flex flex--center"><legend class="no-results-title">No Results</legend></div>
+                  </template>
+                  <template is="dom-if" if="[[showTables]]" >
+                    <div class="flex flex--row flex--justify">
+                      <div class="widgetContainer">
+                        <div class='widget-1'>
+                          <h2> Soft Failures </h2>
+                          <px-data-table table-data='{{softData}}' language="en" striped="true" filterable="true" sortable="true" single-select="true" include-all-columns="true" hide-pagination-control="true"></px-data-table>
+                        </div>
+                      </div>
+
+                      <div class="widgetContainer">
+                        <div class='widget-2'>
+                         <h2> Hard Failures </h2>
+                          <px-data-table table-data='{{hardData}}' language="en" striped="true" filterable="true" sortable="true" single-select="true" include-all-columns="true" hide-pagination-control="true"></px-data-table>
+                        </div>
+                      </div>
+                  </template>
+                  <div id="timeseriesContainer">
+                    <px-vis-timeseries prevent-resize="true" debounce-resize-timing="250" width="900" height="550" progressive-rendering-points-per-frame="16000" progressive-rendering-min-frames="1" chart-horizontal-alignment="center" chart-vertical-alignment="center" margin='{"top":30,"bottom":60,"left":65,"right":65}' show-tooltip="true" tooltip-config='{}' register-config='{"type":"vertical","width":200}' selection-type="xy" chart-data='[{"x":1397102460000,"DE Base":11.4403,"DE Avg":96.5,"DE Alarm":0.56},{"x":1397139660000,"DE Base":13.1913,"DE Avg":96.5,"DE Alarm":0.4},{"x":1397177400000,"DE Base":12.8485,"DE Avg":96.5,"DE Alarm":0.43},{"x":1397228040000,"DE Base":10.975,"DE Avg":96.5,"DE Alarm":0.33,"y3":0.33},{"x":1397248260000,"DE Base":12.9377,"DE Avg":96.5,"DE Alarm":0.47},{"x":1397291280000,"DE Base":13.3795,"DE Avg":96.5,"DE Alarm":0.41},{"x":1397522940000,"DE Base":16.4446,"DE Avg":96.5,"DE Alarm":0.32},{"x":1397542800000,"DE Base":12.2771,"DE Avg":96.5,"DE Alarm":0.35},{"x":1397640960000,"DE Base":13.0709,"DE Avg":96.5,"DE Alarm":0.34},{"x":1397663100000,"DE Avg":88.8,"DE Alarm":0.28},{"x":1397700000000,"DE Base":12.6198,"DE Avg":95.2,"DE Alarm":0.49},{"x":1397753040000,"DE Base":11.0486,"DE Avg":96.5,"DE Alarm":0.35},{"x":1397772540000,"DE Base":14.6892,"DE Avg":96.5,"DE Alarm":0.21},{"x":1397794860000,"DE Base":14.3738,"DE Avg":96.5,"DE Alarm":0.42},{"x":1397813580000,"DE Base":10.4259,"DE Avg":76.5,"DE Alarm":0.58},{"x":1397890680000,"DE Base":13.4261,"DE Avg":96.5,"DE Alarm":0.37},{"x":1397932020000,"DE Base":13.0062,"DE Avg":96.5,"DE Alarm":0.27},{"x":1397973480000,"DE Base":14.475,"DE Avg":96.5,"DE Alarm":0.35},{"x":1398009240000,"DE Avg":96.5,"DE Alarm":0.24},{"x":1398035760000,"DE Base":15.9555,"DE Avg":96.5},{"x":1398075840000,"DE Base":14.535,"DE Avg":16},{"x":1398102960000,"DE Base":12.3671,"DE Avg":96.5},{"x":1398126240000,"DE Base":12.4245,"DE Avg":96.5},{"x":1398195060000,"DE Base":12.0836,"DE Avg":96.5,"DE Alarm":0.31},{"x":1398219120000,"DE Base":15.3137,"DE Avg":96.5,"DE Alarm":0.34},{"x":1398239220000,"DE Base":13.7978,"DE Avg":96.5,"DE Alarm":0.32},{"x":1398617940000,"DE Avg":55.4,"DE Alarm":0.16},{"x":1398638520000,"DE Base":15.0664,"DE Avg":85.7,"DE Alarm":0.41},{"x":1398691860000,"DE Base":13.504,"DE Avg":96.5,"DE Alarm":0.31},{"x":1398714240000,"DE Base":13.7263,"DE Avg":96.5,"DE Alarm":0.36},{"x":1398807540000,"DE Base":14.57,"DE Avg":96.5,"DE Alarm":0.44},{"x":1398858180000,"DE Base":13.9641,"DE Avg":96.5,"DE Alarm":0.25},{"x":1398879420000,"DE Base":12.5418,"DE Avg":96.5,"DE Alarm":0.42},{"x":1398920880000,"DE Base":14.8822,"DE Avg":96.5,"DE Alarm":0.22},{"x":1398956340000,"DE Base":15.2676,"DE Avg":96.5,"DE Alarm":0.42},{"x":1398995280000,"DE Avg":20.3,"DE Alarm":0.16}]' series-config='{"DE Base":{"name":"DE Base","x":"x","y":"DE Base","yAxisUnit":"F","axis":{"id":"axis1","side":"left","number":"1"}},"DE Avg":{"name":"DE Avg","x":"x","y":"DE Avg","yAxisUnit":"Hz","axis":{"id":"axis2","side":"right","number":"1"}},"DE Alarm":{"name":"DE Alarm","x":"x","y":"DE Alarm","yMin":0.11,"yMax":1.1,"yAxisUnit":"C","axis":{"id":"axis3","side":"left","number":"2"}}}' chart-extents='{"x":["dynamic","dynamic"],"y":["dynamic","dynamic"]}' event-data='[{"id":"123","time":1398714240000,"label":"Recalibrate"},{"id":"456","time":1397640960000,"label":"Fan start"},{"id":"789","time":1398126240000,"label":"Fan stop"},{"id":"333","time":1398956340000,"label":"Default"}]' event-config='{"Recalibrate":{"color":"blue","icon":"fa-camera","type":"fa","offset":[0,0],"lineColor":"red","lineWeight":0},"Fan start":{"color":"green","icon":"","type":"unicode","offset":[1,0]},"Fan stop":{"icon":"ge_logo.png","type":"image","offset":[0,-20],"size":"20"}}' threshold-data='[{"for":"DE Base","type":"max","value":15.4784},{"for":"DE Base","type":"min","value":7.6531},{"for":"DE Base","type":"mean","value":15.330657585139331},{"for":"DE Avg","type":"mean","value":75},{"for":"DE Avg","type":"quartile","value":17}]' display-threshold-title="true" threshold-config='{"max":{"color":"red","dashPattern":"5,0","title":"MAX","showThresholdBox":true,"displayTitle":true}}' DE Base-config='{"title":"Date"}' DE Avg-config='{"title":"RPMs","titleTruncation":false,"unit":"x1000rpm","axis1":{"title":"Temperature","titleTruncation":false,"unit":"C"}}' dynamic-menu-config='[{"name":"Delete","action":"function(data) {var conf = this.seriesConfig;delete conf[data.additionalDetail.name];this.set(\"seriesConfig\", {}); this.set(\"seriesConfig\", conf);}","eventName":"delete","icon":"fa-trash"},{"name":"Bring To Front","action":"function(data) {this.set(\"serieToRedrawOnTop\", data.additionalDetail.name);}","eventName":"bring-to-front","icon":"fa-arrow-up"}]' toolbar-config='{"config":{"advancedZoom":true,"pan":true,"tooltip":true,"logHover":{"buttonGroup":2,"tooltipLabel":"The submenu item of this menu will define custom mouse interaction","icon":"fa-leaf","subConfig":{"customClick":{"icon":"fa-coffee","buttonGroup":3,"tooltipLabel":"define some custom mouse interactions on chart","eventName":"my-custom-click","actionConfig":{"mousedown":"function(mousePos) { console.log(\"custom click on chart. Context is the chart. Mouse pos is available: \" + JSON.stringify(mousePos))}","mouseup":"function(mousePos) { console.log(\"custom action on mouse up the chart \" + JSON.stringify(mousePos));}","mouseout":"function(mousePos) { console.log(\"custom action on mouse out the chart \" + JSON.stringify(mousePos));}","mousemove":"function(mousePos) { console.log(\"custom action on hovering the chart \");}"}},"customClick2":{"buttonGroup":3,"icon":"fa-fire-extinguisher","tooltipLabel":"Remove all custom interactions","actionConfig":{"mousedown":null,"mouseup":null,"mouseout":null,"mousemove":null}}}}}}' navigator-config='{"xAxisConfig":{"tickFormat":"%b %d"}}'>
+                    </px-vis-timeseries>
+                  </div>
+                  <!--div>
+                    <h2> Soft Failures </h2>
+                    <px-data-table table-data='{{softData}}' language="en" striped="true" filterable="true" sortable="true" single-select="true" include-all-columns="true" hide-pagination-control="true">
+                    <px-data-table table-data='{{softData}}' language="en" striped="true" filterable="true" sortable="true" single-select="true" include-all-columns="true" hide-pagination-control="true"></px-data-table>
+                  </div>
+                  <div>
+                    <h2> Hard Failures </h2>
+                    <px-data-table table-data='{{softData}}' language="en" striped="true" filterable="true" sortable="true" single-select="true" include-all-columns="true" hide-pagination-control="true">
+                    <px-data-table table-data='{{hardData}}' language="en" striped="true" filterable="true" sortable="true" single-select="true" include-all-columns="true" hide-pagination-control="true"></px-data-table>
+                  </div-->
+                </div>
+
+            </iron-pages>
+
+          <iron-ajax
+          id="redisAjax"
+          url="/queryMicroservice/sensorStatus"
+          on-response="_onRedisResponse"
+          method="POST"
+          >
+          <iron-ajax
+          id="resetAjax"
+          url="/queryMicroservice/resetSensor"
+          on-response="_onResetResponse"
+          method="POST"
+          content-type="application/json"
+          >
+          <iron-ajax
+          id="softFailureAjax"
+          url="/queryMicroservice/softFailures"
+          on-response="_onSoftResponse"
+          method="POST"
+          handle-as="json"
+          content-type="application/json">
+          <iron-ajax
+          id="hardFailureAjax"
+          url="/queryMicroservice/hardFailures"
+          on-response="_onHardResponse"
+          method="POST"
+          handle-as="json"
+          content-type="application/json">
+    </template>
+
+    </px-card>
+  <script>
+    Polymer({
+      is: 'fan-status-landing-view',
+      kpiBarWrapperState: {
+        type: String,
+        value:'kpi-bar-wrapper-datareceived'
+      },
+      kpiColor: {
+        type: String,
+        value:'transparent'
+      },
+      kpisData:{
+        type:Object,
+        value:{}
+      },
+      pageName:{
+        type: String,
+        value: ''
+      },
+      overalltitle:{
+        type:String
+      },
+      storeResponse:{
+        type:Object,
+        value:{}
+      },
+      overallvalue:{
+        type:String
+      },
+      areasObject:{
+          type:Array,
+          value:[]
+      },
+      areasNodeObject:{
+        type:Array,
+        value:[]
+      },
+      lowWarns:{
+        type:Number
+      },
+      highWarns:{
+        type:Number
+      },
+      noErrors:{
+        type:Number
+      },
+      showHigh:{
+        type:String
+      },
+      showLow:{
+        type:String
+      },
+      showNoError:{
+        type:String
+      },
+      iconHigh:{
+        type:String
+      },
+      iconLow:{
+        type:String
+      },
+      iconNoError:{
+        type:String
+      },
+      objectData:{
+        type:Object,
+        value:{}
+      },
+      softData:{
+        type:Object,
+        value:[]
+      },
+      hardData:{
+        type:Object,
+        value:[]
+      },
+      showTables:{
+        type: Boolean,
+        value: false
+      },
+      buttonColor:{
+        type: String
+      },
+      areaSelected:{
+        type: String,
+        notify: true
+      },
+      toolSelected:{
+        type: String,
+        notify: true
+      },
+      fanSelected:{
+        type: String,
+        notify: true
+      },
+
+      ready: function() {
+	       this.$.redisAjax.headers = {
+            "Authorization":'Basic '
+          };
+
+          console.log(this.$.redisAjax)
+        this.$.redisAjax.generateRequest();
+        /*this.fanUnits = [
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 12405", errorStatus: "highWarn", tool: "ToolA01" },
+
+            { name: "FFU 0101", errorStatus: "noError", tool: "ToolA01" },
+            { name: "FFU 0102", errorStatus: "lowWarn", tool: "ToolA01" },
+            { name: "FFU 0103", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 0104", errorStatus: "noError", tool: "ToolA01" },
+            { name: "FFU 0105", errorStatus: "highWarn", tool: "ToolA01" },
+            { name: "FFU 0201", errorStatus: "noError", tool: "ToolA02" },
+            { name: "FFU 0202", errorStatus: "noError", tool: "ToolA02" },
+            { name: "FFU 0203", errorStatus: "highWarn", tool: "ToolA02" },
+            { name: "FFU 0204", errorStatus: "noError", tool: "ToolA02" },
+            { name: "FFU 0205", errorStatus: "noError", tool: "ToolA02" },
+            { name: "FFU 0301", errorStatus: "noError", tool: "ToolA03"  },
+            { name: "FFU 0302", errorStatus: "lowWarn", tool: "ToolA03"  },
+            { name: "FFU 0303", errorStatus: "noError", tool: "ToolA03"  },
+            { name: "FFU 0304", errorStatus: "noError", tool: "ToolA03"  },
+            { name: "FFU 0305", errorStatus: "lowWarn", tool: "ToolA03"  },
+            { name: "FFU 0401", errorStatus: "highWarn", tool: "ToolB01" },
+            { name: "FFU 0402", errorStatus: "lowWarn", tool: "ToolB01"  },
+            { name: "FFU 0403", errorStatus: "noError", tool: "ToolB01"  },
+            { name: "FFU 0404", errorStatus: "noError", tool: "ToolB01"  },
+            { name: "FFU 0405", errorStatus: "lowWarn", tool: "ToolB01"  },
+            { name: "FFU 0501", errorStatus: "noError", tool: "ToolB02"  },
+            { name: "FFU 0502", errorStatus: "noError", tool: "ToolB02"  },
+            { name: "FFU 0503", errorStatus: "noError", tool: "ToolB02"  },
+            { name: "FFU 0504", errorStatus: "lowWarn", tool: "ToolB02"  },
+            { name: "FFU 0505", errorStatus: "highWarn", tool: "ToolB03" }
+        ];
+        //Calculate number in good status
+        this.noErrors = 0;
+			for(var i=0;i<this.fanUnits.length;i++){
+			    if(this.fanUnits[i].errorStatus === "noError")
+			       this.noErrors++;
+			}
+		//Calculate number in lowWarn status
+        this.lowWarns = 0;
+			for(var i=0;i<this.fanUnits.length;i++){
+			    if(this.fanUnits[i].errorStatus === "lowWarn")
+			       this.lowWarns++;
+			}
+		//Calculate number in highWarn status
+        this.highWarns = 0;
+			for(var i=0;i<this.fanUnits.length;i++){
+			    if(this.fanUnits[i].errorStatus === "highWarn")
+			       this.highWarns++;
+			}
+    */
+
+      },
+      attached: function(){
+          //this._alertsData();
+          this._showIcon();
+        },
+        contextChanged: function(newContext, oldContext){
+            // this is where you will receive updates to the context
+        },
+        deckStateChanged: function(newDeckState, oldDeckState){
+            // this is where you will receive updates from other cards
+        },
+        isToolA01: function(item) {
+            return item.tool == "ToolA01";
+        },
+        isToolA02: function(item) {
+            return item.tool == "ToolA02";
+        },
+        isToolA03: function(item) {
+            return item.tool == "ToolA03";
+        },
+        isToolB01: function(item) {
+            return item.tool == "ToolB01";
+        },
+        isToolB02: function(item) {
+            return item.tool == "ToolB02";
+        },
+        _onResetResponse:function(e){
+          var message =e.detail.response;
+          if(message.response=="SUCCESS"){
+            alert("The fan "+this.fanSelected+ " reset status is: "+"\n "+message.response);
+			this.$.redisAjax.headers = {
+            "Authorization":'',
+            'Content-Type': 'application/json'
+           };
+            this.$.redisAjax.generateRequest();
+          }
+          else {
+            alert("Error: Check the connection, "+this.fanSelected+ "was unable to reset ");
+
+          }
+
+        },
+        _onRedisResponse:function(e){
+          var newData=e.detail.response.fanUnits;
+          this.storeResponse=newData;
+          var areacnt=0;
+          var tmpAreaObject= [];
+          var tmpTable={};
+
+          _.each(newData,function(v,j){
+            if(!tmpTable[v.area]){
+              tmpTable[v.area]={area:v.area};
+            }
+          })
+            _.each(newData,function(n){
+              if(tmpTable[n.area]){
+                tmpTable[n.area]["tools"]={};
+              }
+            })
+            _.each(newData,function(m){
+              if(tmpTable[m.area]["tools"])
+              {
+                tmpTable[m.area]["tools"][m.tool]={tool:m.tool,names:{}}
+              }
+            })
+            _.each(newData,function(o){
+              if(tmpTable[o.area]["tools"][o.tool])
+              {
+                tmpTable[o.area]["tools"][o.tool]["names"][o.name]={name:o.name, errorStatus:o.errorStatus}
+              }
+          })
+          this.set("objectData",tmpTable)
+          this.set("areasNodeObject",_.sortBy(tmpTable, 'area'))
+          for(var i=0;i<newData.length;i++){
+            var flagArea=false;
+            var tmpArea = newData[i].area;
+            for(var j=0;j<tmpAreaObject.length;j++){
+              if(tmpAreaObject[j].value==tmpArea){
+                flagArea=true;
+              }
+            }
+            if(flagArea==false){
+              tmpAreaObject[areacnt]={value:tmpArea};
+              areacnt++;
+            }
+          }
+          this.set("areasObject",_.sortBy(tmpAreaObject, 'value'));
+
+          var pages = document.querySelector('#iron-pages');
+          //console.log(pages.selected);
+          if(pages.selected!="selectedFanPage"){
+            var selectable= this.areasObject[0].value;
+            this.pageName=selectable;
+            this.set("areaSelected",selectable);
+            this._alertsData(selectable);
+          }
+          else{
+            this._alertsData(this.areaSelected);
+
+          }
+
+
+        },
+        /*-------Select the iron page according with the selected area----------*/
+        _selectAreaPage:function(e){
+          this.set("areaSelected",e.srcElement.name);
+          this.set("noData",false);
+          this.set("showTables",false);
+          //var pages = document.querySelector('#iron-pages');
+          var id=e.srcElement.name;
+          this.set('pageName',id);
+          this._alertsData(id);
+        },
+        /*-----------------------------------------*/
+        /*-------Calculate summary status----------*/
+        _alertsData: function(id){
+          this.noErrors = 0;
+          this.lowWarns = 0;
+          this.highWarns = 0;
+
+          var tmplowWarns2=0,tmphighWarns2=0,tmpnoErrors2=0;
+          var tmpData=this.storeResponse;
+          //Calculate number in lowWarn status
+          for(var i=0;i<tmpData.length;i++){
+              if(tmpData[i].errorStatus === "lowWarn" && tmpData[i].area===id){
+                 this.lowWarns++;
+                 tmplowWarns2++;
+               }
+          }
+          //Calculate number in highWarn status
+          for(var i=0;i<tmpData.length;i++){
+              if(tmpData[i].errorStatus === "highWarn" && tmpData[i].area===id){
+                 this.highWarns++;
+                 tmphighWarns2++;
+               }
+          }
+          for(var i=0;i<tmpData.length;i++){
+              if(tmpData[i].errorStatus === "noError" && tmpData[i].area===id){
+                 this.noErrors++;
+                 tmpnoErrors2++;
+               }
+          }
+          var tmptotal=this.highWarns+this.lowWarns+this.noErrors;
+          this.total=tmptotal;
+          this.kpiBarWrapperState = 'kpi-bar-wrapper-datareceived';
+          if(tmphighWarns2>0){
+            this.showHigh="red";
+            this.iconHigh="fa-exclamation-triangle";
+          }
+          else{
+            this.showHigh="transparent";
+            this.iconHigh="";
+          }
+          if(tmplowWarns2>0){
+            this.showLow="#ff7518";
+            this.iconLow="fa-exclamation-triangle";
+          }
+          else{
+            this.showLow="transparent";
+            this.iconLow="";
+          }
+          if(tmpnoErrors2>0){
+            this.showNoError="blue";
+            this.iconNoError="fa-check-circle";
+         }
+         else{
+           this.showNoError="transparent";
+           this.iconNoError="";
+         }
+         var tmpkpis={kpis:[{value: this.highWarns,label: "Alerts",uom: null,icon: this.iconHigh , color:this.showHigh},
+           {value: this.lowWarns, label: "Warnings",uom: null,icon: this.iconLow, color:this.showLow},
+           {value: this.noErrors, label: "Good",uom: null, icon: this.iconNoError, color:this.showNoError},
+           {value: this.total,label: "Total", uom: null,icon:"",color:""}]};
+         this.kpisData=tmpkpis.kpis
+         return tmptotal
+        },
+        /*-----------------------------------------*/
+        /*-Define the class to change the tool's color-*/
+        _getButtonClass: function(id){
+          var buttonColor="",tmplowWarns=0,tmphighWarns=0,tmpnoErrors=0;
+          var tmpData=this.storeResponse;
+         for(var i=0;i<tmpData.length;i++){
+             if(tmpData[i].errorStatus === "lowWarn" && tmpData[i].area===id)
+                tmplowWarns++;
+         }
+
+         for(var i=0;i<tmpData.length;i++){
+             if(tmpData[i].errorStatus === "highWarn" && tmpData[i].area===id)
+                tmphighWarns++;
+         }
+         for(var i=0;i<tmpData.length;i++){
+             if(tmpData[i].errorStatus === "noError" && tmpData[i].area===id)
+                tmpnoErrors++;
+         }
+          //alert("low: "+tmplowWarns +"\nhigh: "+tmphighWarns+"\nnoError: "+tmpnoErrors)
+          if(tmplowWarns>=1 && tmphighWarns==0){
+        //    alert("lowWarn color");
+            buttonColor="lowWarnButton";
+            var tmpId = (id).split(" ").join("")
+            //element.style.backgroundColor="green";
+          }
+          else if(tmphighWarns>=1){
+            buttonColor="highWarnButton";
+          }
+          else if(tmpnoErrors>=1 && tmphighWarns==0 && tmplowWarns==0){
+              buttonColor="noErrorButton";
+          }
+          return buttonColor;
+        },
+        /*-----------------------------------------*/
+
+        _getTools:function(e){
+          return Object.keys(this.objectData[e].tools)
+        },
+        /*-----------------------------------------*/
+
+        _getNames:function(area,tool){
+            var tmpNames=[], namesData=[]
+            tmpNames=Object.keys(this.objectData[area].tools[tool].names)
+            for(var j=0;j<tmpNames.length;j++){
+                namesData.push({"name":tmpNames[j],"errorStatus":this.objectData[area].tools[tool].names[tmpNames[j]].errorStatus});
+            }
+            return namesData
+        },
+          /*-----------------------------------------*/
+        _getId: function(val){
+          return (val).split(" ").join("")
+        },
+        /*-----------------------------------------*/
+        _selectedFan: function(e){
+          //alert(e.srcElement.id)
+          var spinner = this.$.spinnerODV;
+          spinner.show();
+          this.toolSelected=e.srcElement.tool;
+          this.fanSelected=e.srcElement.value;
+          this.set("fanSelected",e.srcElement.id)
+          this.hardData=[];
+          this.softData=[];
+          //console.log(e.srcElement.value+" - "+e.srcElement.tool)
+          this.$.softFailureAjax.body = {
+            "gateway":e.srcElement.tool,
+            "fan":e.srcElement.value
+          };
+          this.$.hardFailureAjax.body = {
+            "gateway":e.srcElement.tool,
+            "fan":e.srcElement.value
+          };
+          this._changeToSelectedFan();
+          this.$.softFailureAjax.generateRequest();
+          this.$.hardFailureAjax.generateRequest();
+
+        },
+        /*-----------------------------------------*/
+        _onSoftResponse:function(e){
+
+          var tmpSoftData=e.detail.response;
+          if(tmpSoftData !== null  && tmpSoftData.softFailures.length > 0 ){
+            var tmpSoftTable=tmpSoftData.softFailures;
+            this.set("softData",_.sortBy(tmpSoftTable,"result"));
+          }
+
+        },
+        /*-----------------------------------------*/
+        _onHardResponse:function(e){
+          var spinner = this.$.spinnerODV;
+          var tmpHardData=e.detail.response;
+          if(tmpHardData !== null  && tmpHardData.hardFailures.length > 0 ){
+            var tmpHardTable=tmpHardData.hardFailures;
+            this.set("hardData",_.sortBy(tmpHardTable,"result"));
+          }
+          if(this.hardData.length>=1 || this.softData.length>=1){
+            spinner.hide();
+            this.set("noData",false);
+            this.set("showTables",true);
+          }
+          else{
+            spinner.hide();
+            this.set("noData",true);
+            this.set("showTables",false);
+          }
+
+        },
+        /*-----------------------------------------*/
+        _changeToSelectedFan: function(){
+          var pages = document.querySelector('#iron-pages');
+          this.set('pageName',"selectedFanPage");
+
+          //this.set("showTables",true);
+        },
+        /*-----------------------------------------*/
+        _showIcon: function(val){
+          if(val>=1){
+            return true;
+          }
+          else{
+            return false;
+          }
+        },
+        /*-----------------------------------------*/
+        _resetStatus: function(){
+          this.$.resetAjax.body= {
+            "gateway":this.toolSelected,
+            "fan":this.fanSelected
+          };
+          this.$.resetAjax.headers = {
+            "Authorization":'',
+            'Content-Type': 'application/json'
+          };
+          this.$.resetAjax.generateRequest();
+
+        }
+        /*-----------------------------------------*/
+
+    });
+  </script>
+
+</dom-module>

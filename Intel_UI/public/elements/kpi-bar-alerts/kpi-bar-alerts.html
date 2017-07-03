@@ -1,0 +1,47 @@
+<!-- import polymer -->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<!-- import dependent comonents -->
+<link rel="import" href="kpi-datapoint-alert.html">
+<link rel="import" href="kpi-bar-meter.html">
+
+<!-- import page level css -->
+<link rel="import" href="kpi-bar-styles.html">
+
+<dom-module id='kpi-bar-alerts'>
+  <template>
+    <style include="kpi-bar-styles"></style>
+    <div class$="kpi-bar-wrapper [[kpiBarWrapperState]]">
+      <template id="kpiDatapoints" is="dom-repeat" items="[[datapoints]]">
+        <kpi-datapoint-alert label="[[item.label]]" value="[[item.value]]" units="[[item.uom]]" health="[[item.health]]" icon="{{item.icon}}" show="{{item.show}}" color="{{item.color}}"></kpi-datapoint-alert>
+      </template>
+      <!--kpi-bar-meter id="kpiBarMeter" label="[[overallLabel]]" percentage="[[overallValue]]"></kpi-bar-meter-->
+    <div>
+  </template>
+  <script>
+  Polymer({
+    is: 'kpi-bar-alerts',
+    properties: {
+      datapoints: [],
+      overallLabel: '',
+      overallValue: '',
+      overallMax: '',
+      kpiBarWrapperState: 'kpi-bar-wrapper-waiting',
+      icon: {
+        type: String,
+        notify: true
+      },
+      color: {
+        type: String,
+        notify: true
+      },
+      classvalue:{
+        type:String,
+        notify: true
+      }
+    },
+    ready: function(){
+    }
+  });
+  </script>
+</dom-module>

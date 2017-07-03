@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>INTEL Fan Filter Unit Data Extraction File Store</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+    <link href="/css/loading.css" rel="stylesheet"/>
+    <link href="/css/heading.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <form action="/">
+        <div class="hero-unit">
+            <h1 class="heading-small">INTEL Fan Filter Unit Data Extraction File Store</h1>
+
+            <p>Predix Blobstore Application for Storing and Accessing INTEL FFU Files  </p>
+        </div>
+    </form>
+    <h2>Upload a File From your Local File System</h2>
+
+    <form id="fileupload">
+        <div class="form-group">
+            <label for="image">File to upload</label>
+            <input type="file" id="image" name="file"/>
+
+            <p class="help-block">Note: Uploading a file of the same name will replace the existing file.</p>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-default upload-blob-btn">Upload</button>
+        </div>
+    </form>
+    <h2>Click a File to Download</h2>
+
+    <div class="table-responsive" id="blob-table">
+        <table class="table">
+            <tbody class="table tbody">
+            <tr th:each="image : ${images}" th:id="${image.getKey()}">
+                <td class="table td"><a th:href="@{'/v1/blob/'+${image.getKey()}}"><span
+                        th:inline="text">[[${image.getKey()}]]</span></a>
+                </td>
+                <td class="table td">
+                    <a href="#" class="delete-blob-link" th:attr="data-blob-id=${image.getKey()}">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="loading-modal"/>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/loading.js"></script>
+<script src="/js/blob-actions.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "entrypoint": "public/index.html",
+  "shell": "public/elements/seed-app/seed-app.html",
+  "fragments": [
+    "public/elements/views/about-view.html",
+    "public/elements/views/rmd-view.html",
+    "public/elements/timeseries-chart/timeseries-chart.html",
+    "public/elements/views/fan-status-landing-view.html",
+	"public/elements/views/data-extract-view.html"
+  ],
+  "sources": [
+    "public/elements/**/*",
+    "public/index*",
+    "public/seed*",
+    "!public/elements/dev-guide/**"
+  ],
+  "extraDependencies": []
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<version>1</version>
+	<pluginVersion><![CDATA[3.7.1.201510041102-RELEASE]]></pluginVersion>
+	<configSuffixes>
+		<configSuffix><![CDATA[xml]]></configSuffix>
+	</configSuffixes>
+	<enableImports><![CDATA[false]]></enableImports>
+	<configs>
+		<config>java:com.ge.predix.solsvc.training.ingestion.handler.AssetDataHandler</config>
+		<config>java:com.ge.predix.solsvc.training.ingestion.handler.DataIngestionHandler</config>
+		<config>java:com.ge.predix.solsvc.training.ingestion.handler.TimeSeriesDataIngestionHandler</config>
+		<config>java:com.ge.predix.solsvc.training.ingestion.websocket.WebSocketClient</config>
+		<config>java:com.ge.predix.solsvc.training.ingestion.websocket.WebSocketConfig</config>
+		<config>java:com.ge.predix.solsvc.training.ingestion.websocket.WebsocketEndpoint</config>
+		<config>java:com.ge.predix.solsvc.training.ingestion.boot.LocomotiveMonitoringBoot</config>
+		<config>java:com.ge.predix.solsvc.training.ingestion.boot.CorsFilter</config>
+	</configs>
+	<autoconfigs>
+	</autoconfigs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>

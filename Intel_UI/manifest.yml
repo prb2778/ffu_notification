@@ -1,0 +1,24 @@
+---
+applications:
+  - name: Intel-FFU-MVP-Application
+    memory: 256M
+    buildpack: nodejs_buildpack
+    command: node server/app.js
+    path: dist
+services:
+  - dojo-uaa
+  - dojo-timeseries
+  - Intel-Asset-Service
+  - mvp-acs
+  - Intel-MVP-Redis
+env:
+    node_env: cloud
+    uaa_service_label : predix-uaa
+    # Add these values for authentication in the cloud
+    base64ClientCredential: S2VudC1Eb2pvLUNsaWVudDpJbnRlbERvam8=
+    loginBase64ClientCredential: S2VudC1Eb2pvLUNsaWVudDpJbnRlbERvam8=
+    # Use a full wss:// URL for actual web socket server. use /livestream for mock data.
+    websocketServerURL: /livestream
+    redisServiceURL: "https://Intel-MVP-app.run.aws-usw02-pr.ice.predix.io"
+    rmdDocsURL: "https://raw.githubusercontent.com/PredixDev/predix-rmd-ref-app/master/README.md"
+    inteltsqueryURL: "https://inteltsquery-preinterpretative-reverie.run.aws-usw02-pr.ice.predix.io"

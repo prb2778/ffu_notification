@@ -1,0 +1,8 @@
+target_platforms
+.~lock*
+/.DS_Store
+/target/
+.project
+.classpath
+.settings
+/bin/

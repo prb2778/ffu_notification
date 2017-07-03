@@ -1,0 +1,104 @@
+<!-- import polymer -->
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/px-polymer-font-awesome/polymer-font-awesome.html" />
+
+<link rel="import" href="../../bower_components/px-flexbox-design/css/px-flexbox-design-demo-styles.html" />
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html" />
+<!-- import page level css -->
+<link rel="import" href="kpi-datapoint-alert-styles.html">
+
+<dom-module id="kpi-datapoint-alert">
+  <template>
+    <style include="kpi-datapoint-alert-styles"></style>
+    <div class="kpi-datapoint-wrapper">
+
+      <div clas="flex flex--row">
+        <div class="kpi-datapoint-label">[[label]] </div>
+      </div>
+      <div class="flex kpi-datapoint-value-units">
+        <div class="flex flex--wrap value-icon">
+          <span class="kpi-datapoint-value">{{value}}</span>
+          <div>
+            <iron-icon id="headericon" class$="kpi-datapoints-icon {{color}}">[[icon]]</iron-icon>
+          </div>
+        </div>
+
+        <!--span class="kpi-datapoint-units">[[units]]</span-->
+
+      </div>
+      <div class$="kpi-datapoint-health kpi-datapoint-health-[[health]]"></div>
+    <div>
+  </template>
+  <script>
+  Polymer({
+    is: 'kpi-datapoint-alert',
+    properties: {
+      label: {
+        type: String,
+        value: ''
+      },
+      value: {
+        type: String,
+        value: '',
+        observer: '_valueChanged'
+      },
+      units: {
+        type: String,
+        value: ''
+      },
+      health: {
+        type: String,
+        value: ''
+      },
+      icon:{
+          type: String,
+          observer: '_iconChange'
+      },
+      color:{
+            type: String,
+            observer: '_colorChange'
+      },
+    },
+
+    attached: function(){
+        //this._iconChange();
+        //this._showIcon();
+      },
+
+      _colorChange: function() {
+
+      },
+      _iconChange: function() {
+        //console.log("iconChange function Color: "+this.color+" icon: "+this.icon);
+        if(this.icon){
+
+          var headerIcon = Polymer.dom(this.root).querySelector('#headericon');
+          //console.log("color: "+this.color);
+          headerIcon.style.color=this.color;
+
+          //console.log(headerIcon.style.color);
+          headerIcon.icon = "fa:"+this.icon;
+          this.toggleClass("hidden", false, headerIcon);
+          }
+          else {
+            var headerIcon = Polymer.dom(this.root).querySelector('#headericon');
+            headerIcon.icon = "";
+            this.toggleClass("hidden", true, headerIcon);
+          }
+
+
+      },
+      _showIcon: function(){
+
+      },
+      _valueChanged: function(){
+        //console.log(this.value);
+      },
+
+    ready: function(){
+    }
+
+  });
+  </script>
+</dom-module>

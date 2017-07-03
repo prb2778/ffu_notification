@@ -1,0 +1,98 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/px-view-header/px-view-header.html">
+<link rel="import" href="../../bower_components/px-card/px-card.html">
+<link rel="import" href="../../bower_components/px-widget-cards/px-threeup.html" />
+<link rel="import" href="../../bower_components/px-data-table/px-data-table.html" />
+<link rel="import" href="../../bower_components/px-vis-timeseries/px-vis-timeseries.html" />
+<link rel="import" href="../../bower_components/px-simple-line-chart/px-simple-line-chart.html" />
+
+
+<dom-module id="selected-fan-view-ts">
+<template>
+<style>
+      :host {
+        display: block;
+		/*--px-tab-border-color: none;*/
+		--px-tab-background-color: none;
+		--px-tab-background-color--selected:  none;
+		--px-tab-border-width-selected:5px;
+
+
+      }
+      .topCard{
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+      }
+      .topCard div{
+        flex-grow: 1;
+      }
+      .viewSwitch{
+        text-align: right;
+      }
+      .viewSwitch a{
+        color: #000;
+        padding:  10px;
+        text-decoration: none;
+      }
+      .viewSwitch a:hover{
+        opacity: .75;
+      }
+      .topCard h1{
+        margin-top: 0;
+        padding-top:  10px;
+      }
+    </style>
+        <px-card header-text='' class="topCard">
+        <h1> Sample Fan Name </h1>
+          <div class="viewSwitch">
+            <a href="#" class="fa fa-chevron-circle-left fa-2x"></a>
+            <a href="#" class="fa fa-chevron-circle-right fa-2x"></a>
+            <a href="#/selected-fan" class="fa fa-table fa-2x"></a>
+          </div>
+        </px-card>
+        <px-card header-text='X Axis' chevron>
+         <px-simple-line-chart min-label="0.15" max-label="3.41" line-data="{{xAxisData}}" columns="20" rows="7"></px-simple-line-chart>
+        </px-card>
+        <px-card header-text='Y Axis' chevron>
+         <px-simple-line-chart min-label="0.15" max-label="3.41" line-data="{{xAxisData}}" columns="20" rows="7"></px-simple-line-chart>
+        </px-card>
+        <px-card header-text='Z Axis' chevron>
+         <px-simple-line-chart min-label="0.15" max-label="3.41" line-data="{{xAxisData}}" columns="20" rows="7"></px-simple-line-chart>
+        </px-card>
+    </template>
+  <script>
+    Polymer({
+      is: 'selected-fan-view-ts',
+      ready: function() {
+        this.xAxisData = [
+           [50,2], [12,3], [8,4]
+          ];
+        this.yAxisData = [
+           [50,2], [12,3], [8,4]
+          ];
+        this.zAxisData = [
+           [50,2], [12,3], [8,4]
+          ];
+         // this is where you can do some initialization of your card
+        },
+        contextChanged: function(newContext, oldContext){
+            // this is where you will receive updates to the context
+        },
+        deckStateChanged: function(newDeckState, oldDeckState){
+            // this is where you will receive updates from other cards
+        },
+        isToolA01: function(item) {
+            return item.tool == "ToolA01";
+        },
+        isToolA02: function(item) {
+            return item.tool == "ToolA02";
+        },
+        isToolA03: function(item) {
+            return item.tool == "ToolA03";
+        },
+    });
+
+  </script>
+
+</dom-module>

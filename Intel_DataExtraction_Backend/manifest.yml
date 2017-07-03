@@ -1,0 +1,17 @@
+---
+applications:
+- name: IntelTSQuery
+  memory: 512MB
+  disk_quota: 256MB
+  random-route: true
+  buildpack: python_buildpack
+  command: python getdata.py
+
+services:
+   - dojo-uaa
+   - Intel-Blobstore
+
+env:
+    client_id: Kent-Dojo-Client
+    base64encodedClientDetails: S2VudC1Eb2pvLUNsaWVudDpJbnRlbERvam8=
+
