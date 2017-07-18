@@ -554,8 +554,14 @@ public class DataQueryHandler
 					    try
 					    {
 					    	TagStatusDTO tagSTS = new TagStatusDTO();
-					    	tagSTS.setName(tagName.substring(8,14));
-					    	tagSTS.setTool(tagName.substring(0,7));
+//					    	tagSTS.setName(tagName.substring(8,14));
+//					    	tagSTS.setTool(tagName.substring(0,7));
+					    	String[] completeTag = tagName.split("_");
+					    	String name = completeTag[1]; 
+					    	String tool = completeTag[0]; 
+					    	tagSTS.setName(name);
+					    	tagSTS.setTool(tool);    
+						    
 					    	if(prop.getProperty(tagSTS.getTool())!=null)
 					    	tagSTS.setArea(prop.getProperty(tagSTS.getTool()));
 					    	else

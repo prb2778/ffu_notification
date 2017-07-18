@@ -37,8 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ge.predix.solsvc.training.ingestion.data_ingestion.api.DataIngestionServiceAPI;
-import com.ge.predix.solsvc.training.ingestion.data_ingestion.dto.AdresseeDTO;
+
 import com.ge.predix.solsvc.training.ingestion.data_ingestion.dto.FanParamsDTO;
 import com.ge.predix.solsvc.training.ingestion.data_ingestion.dto.HFailuresDTO;
 import com.ge.predix.solsvc.training.ingestion.data_ingestion.dto.IngestDTO;
@@ -49,9 +48,6 @@ import com.ge.predix.solsvc.training.ingestion.data_ingestion.dto.SimpleResponse
 import com.ge.predix.solsvc.training.ingestion.data_ingestion.handler.DataIngestionHandler;
 import com.ge.predix.solsvc.training.query.data_query.handler.DataQueryHandler;
 
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
 
 /**
  * 
@@ -59,7 +55,7 @@ import redis.clients.jedis.Protocol;
  */
 @RestController
 @SuppressWarnings("nls")
-public class DataIngestionServiceController extends TimerTask   implements DataIngestionServiceAPI
+public class DataIngestionServiceController extends TimerTask  
 {
     private static Logger        log       = LoggerFactory.getLogger(DataIngestionServiceController.class);
 
@@ -297,7 +293,7 @@ public class DataIngestionServiceController extends TimerTask   implements DataI
 
     	            if (listOfFiles[i].isFile())             {
     	                files = listOfFiles[i].getName();
-    	                if(files.contains("softFailures"))
+    	                if(files.contains("emailFiles"))
     	                	fileNames.add(files);
     	            }
     	        }
@@ -459,33 +455,7 @@ public class DataIngestionServiceController extends TimerTask   implements DataI
             log.error("Failure in /sendEmail POST ", e);
             return "Error";
         }
-    }
 
-	/* (non-Javadoc)r
-	 * @see com.ge.predix.solsvc.training.ingestion.data_ingestion.api.DataIngestionServiceAPI#ingestTS(java.util.List)
-	 */
-	@Override
-	public String ingestTS(List<ParamsDTO> params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.ge.predix.solsvc.training.ingestion.data_ingestion.api.DataIngestionServiceAPI#ingestFiles()
-	 */
-	@Override
-	public String ingestFiles() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.ge.predix.solsvc.training.ingestion.data_ingestion.api.DataIngestionServiceAPI#startMonitorTS()
-	 */
-	@Override
-	public void startMonitorTS() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	

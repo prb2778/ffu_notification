@@ -54,6 +54,9 @@ public class LocomotiveMonitoringBoot {
 		String profiles[] = ctx.getEnvironment().getActiveProfiles();
 		for (int i = 0; i < profiles.length; i++)
 			log.info("profile=" + profiles[i]);
+	    
+	    LocomotiveMonitoringBoot loc = new LocomotiveMonitoringBoot();
+		loc.setCronService();
     }
     /**
      * @return -
@@ -62,6 +65,36 @@ public class LocomotiveMonitoringBoot {
     public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
         return new TomcatEmbeddedServletContainerFactory();
     }
+	
+    /**
+    *
+    *The job is runing once the app is deployed.
+    */	
+    private void setCronService() {
+    	try
+        {
+    		log.info("Monitor is startting");
+    		Properties prop = new Properties();
+			String propFileName = "config.properties";
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+			if (inputStream != null) {
+				prop.load(inputStream);
+			} else {
+				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+			}
+			try {
+    			Timer t = new Timer();
+    			DataIngestionServiceController task = new DataIngestionServiceController();
+    			t.scheduleAtFixedRate(task, 0, new Long (prop.getProperty("periodic.basis")));
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			
+    		}
+    		
+    	}catch (Throwable e){
+            log.error("Failure in /startTSMonitor POST ", e);
+            
+        }
     
 
 }
