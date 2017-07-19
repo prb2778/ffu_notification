@@ -1,5 +1,5 @@
 """ 
-AUTHORS: Patrick Bean + Jeffrey Lentz
+AUTHORS: Patrick Bean
 COMPANY: GENERAL ELECTRIC, DIGITAL (GE DIGITAL)
 DATE: 6/01/2017
 
@@ -11,6 +11,8 @@ DESCRIPTION:--------THIS PROGRAM generate Querie responses from Predix Timeserie
 import requests
 import json
 import pandas as pd
+import numpy as np
+import time
 
          
         
@@ -55,23 +57,25 @@ def getPredixTSData(QueryParams):
             return zone
         ############### Get Tags and Units Lists ####        
         def query_cassandra(tag, from_date, to_date, limit, bearer_token, URL, tszone):   
-            print(URL)      
-            url = URL + "v1/datapoints"
-
-            limit = str(int(limit))
-            payload = r'{"start": ' + from_date + ', "end": ' + to_date + ', "tags": [{"name": "' + tag + '", "limit": ' + limit + ', "order": "desc"}]}'
-            headers = {
-                'predix-zone-id': tszone,
-                'content-type': "application/json",
-                'authorization': "Bearer " + bearer_token,
-                'cache-control': "no-cache"
-                }             
-            response = requests.request("POST", url, data=payload, headers=headers)                         
-            data = response.json()               
-            data_df = pd.DataFrame(data['tags'][0]['results'][0]['values'])
-            data_df.columns = ['Timestamp', 'Value', 'Quality']
-            data_df['Tagname'] = data['tags'][0]['name']
-            data_df['Timestamp'] = pd.to_datetime(data_df['Timestamp']*1000000)               
+            try:      
+                url = URL + "v1/datapoints"
+    
+                limit = str(int(limit))
+                payload = r'{"start": ' + from_date + ', "end": ' + to_date + ', "tags": [{"name": "' + tag + '", "limit": ' + limit + ', "order": "desc"}]}'
+                headers = {
+                    'predix-zone-id': tszone,
+                    'content-type': "application/json",
+                    'authorization': "Bearer " + bearer_token,
+                    'cache-control': "no-cache"
+                    }             
+                response = requests.request("POST", url, data=payload, headers=headers)                         
+                data = response.json()               
+                data_df = pd.DataFrame(data['tags'][0]['results'][0]['values'])
+                data_df.columns = ['Timestamp', 'Value', 'Quality']
+                data_df['Tagname'] = data['tags'][0]['name']
+                data_df['Timestamp'] = pd.to_datetime(data_df['Timestamp']*1000000)        
+            except:
+                data_df = pd.DataFrame(np.array(["Tag: "+tag,"No Data Available in Timeseries","From: "+time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(from_date)/1000))+" to: "+time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(to_date)/1000))]))             
             return data_df    
                     # Call to function for retrieving token        
         bearer_token = get_bearer_token()      
@@ -114,7 +118,6 @@ def getTaglist(bearer_token, TS_URL, zone):
     return jsonResponse
         ############# END Query Loop ###################
                 
-        
 
     
     
