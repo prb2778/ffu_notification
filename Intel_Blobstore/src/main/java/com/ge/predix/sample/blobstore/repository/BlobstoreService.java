@@ -227,7 +227,7 @@ public class BlobstoreService {
      *
      * @return List<BlobFile> List of Blobs
      */
-    public List<S3Object> get() {
+    public List<S3Object> get() throws Exception {
         List<S3Object> objs = new ArrayList<>();
         try {
             // Get the List from BlobStore
@@ -235,7 +235,10 @@ public class BlobstoreService {
 
             for (S3ObjectSummary objectSummary :
                     objectList.getObjectSummaries()) {
-                objs.add(s3Client.getObject(new GetObjectRequest(bucket, objectSummary.getKey())));
+                
+		S3Object newobj = s3Client.getObject(new GetObjectRequest(bucket, objectSummary.getKey()));
+		objs.add(newobj);
+		newobj.close();
             }
 
         } catch (Exception e) {
