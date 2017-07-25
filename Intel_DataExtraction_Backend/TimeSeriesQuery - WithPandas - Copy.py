@@ -1,5 +1,5 @@
 """ 
-AUTHORS: Patrick Bean
+AUTHORS: Patrick Bean + Jeffrey Lentz
 COMPANY: GENERAL ELECTRIC, DIGITAL (GE DIGITAL)
 DATE: 6/01/2017
 
@@ -11,8 +11,6 @@ DESCRIPTION:--------THIS PROGRAM generate Querie responses from Predix Timeserie
 import requests
 import json
 import pandas as pd
-import numpy as np
-import time
 
          
         
@@ -73,10 +71,17 @@ def getPredixTSData(QueryParams):
                 data_df = pd.DataFrame(data['tags'][0]['results'][0]['values'])
                 data_df.columns = ['Timestamp', 'Value', 'Quality']
                 data_df['Tagname'] = data['tags'][0]['name']
-                data_df['Timestamp'] = pd.to_datetime(data_df['Timestamp']*1000000)        
-            except:
+                data_df['DateString'] = pd.to_datetime(data_df['Timestamp']*1000000)                
+                ts = []
+                for index, row in data_df.iterrows():
+                    x = str(row['DateString'])
+                    ts.append(x)
+                data_df['DateString'] = ts
+                
+            except Exception as e:
+                print(e)
                 data_df = pd.DataFrame(np.array(["Tag: "+tag,"No Data Available in Timeseries","From: "+time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(from_date)/1000))+" to: "+time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(to_date)/1000))]))             
-            return data_df    
+            return data_df     
                     # Call to function for retrieving token        
         bearer_token = get_bearer_token()      
         tag_list = get_tag_list()        
@@ -118,6 +123,7 @@ def getTaglist(bearer_token, TS_URL, zone):
     return jsonResponse
         ############# END Query Loop ###################
                 
+        
 
     
     
