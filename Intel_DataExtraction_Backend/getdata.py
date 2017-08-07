@@ -17,9 +17,14 @@ global UAA_URL,timeseries_url, timeseries_zone, access_key, secret_key, bucket, 
 
 
 ## SET this only for local testing, if VCAPS is set env they will be overwritten by VCAPS.
-CLIENT_ID = None # "app_client_id"
-UAA_URL=None#"https://61a46d35-834f-47fd-beea-5dd1c1c5bbec.predix-uaa.run.aws-usw02-pr.ice.predix.io" 
-BASE64ENCODING =None # "S2VudC1Eb2pvLUNsaWVudDpJbnRlbERvam8="
+CLIENT_ID = None
+#CLIENT_ID = "app_client_id"
+UAA_URL=None 
+#UAA_URL="https://61a46d35-834f-47fd-beea-5dd1c1c5bbec.predix-uaa.run.aws-usw02-pr.ice.predix.io" 
+BASE64ENCODING =None 
+#BASE64ENCODING ="S2VudC1Eb2pvLUNsaWVudDpJbnRlbERvam8="
+#timeseries_zone = "ed578c7f-b571-49f7-bdd5-2b6fd87b961b"
+#timeseries_url = "https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/"
 port = int(os.getenv("PORT", 9099))
 app = Flask(__name__)
 cors = CORS(app)
@@ -115,6 +120,7 @@ def getTSdata():
 ##############################  TOKEN CHECKING ##################################
 
 def check_token(token):
+
     url = UAA_URL + "/check_token"
     payload= "token=" + token
     headers = {
@@ -132,6 +138,7 @@ def check_token(token):
         Authorized = True
     else:
         Authorized = "Somethings Wrong"
+   
     return Authorized
 
 ##############################  END TOKEN CHECKING ##################################
@@ -146,12 +153,12 @@ def upload_file(datadict):
             value.to_csv(f)
         f.close()
         if len(value)>0:
-            client.upload_file('fpath.csv', bucket, key + "_"+datetime.datetime.now().strftime('%Y_%m_%d_%H_%M'))                             
+            client.upload_file('fpath.csv', bucket, key + "_"+datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')+".csv")                             
         os.remove('fpath.csv')        
     #return 'Tag_Data_'+ datetime.datetime.now().strftime('%Y_%m_%d_%H_%M')
 
 def _get_s3_client():
-    print("!!!!!!! ABOUT TO CONNECT TO S3")
+    print("ABOUT TO CONNECT TO S3")
     awssession = boto3.session.Session(aws_access_key_id=access_key, aws_secret_access_key=secret_key)
     config = boto3.session.Config(signature_version='s3', s3={'addressing_style': 'virtual'})
     client = awssession.client('s3', endpoint_url="https://"+blobHost, config=config)
@@ -159,9 +166,7 @@ def _get_s3_client():
 
 
 def get_bearer_token():
-    print("!!!!!!!FETCHING BEARER TOKEN")
-    print("!!!!Base64 is "+ BASE64ENCODING)
-    print("UAAURL is "+ UAA_URL)
+    print("FETCHING BEARER TOKEN")
     url = UAA_URL + "/oauth/token?grant_type=client_credentials"
     headers = {
         'authorization': "Basic " + BASE64ENCODING,
