@@ -222,7 +222,7 @@ public class TimeSeriesDataIngestionHandler extends BaseFactoryIT
 //            	
 //            	Timestamp stmp = new Timestamp(Calendar.getInstance().getTimeInMillis());
 //                ingestionBuilder.addIngestionTag(IngestionTag.Builder.createIngestionTag()
-//                .withTagName(sensor.getGateway().concat("_").concat(sensor.getFan()).concat("_Soft_Fail_Detected_Reset"))
+//                .withTagName(sensor.getGateway().concat("_").concat(sensor.getFan()).concat("_SoftFailDetected_Reset"))
 //                .addDataPoints(Arrays.asList(new DataPoint(stmp.getTime(), 1, Quality.GOOD))).addAttribute("key", "").build());
 //                
 //               try {
@@ -245,9 +245,9 @@ public class TimeSeriesDataIngestionHandler extends BaseFactoryIT
 			JedisPool redisPool = new JedisPool(new JedisPoolConfig(), prop.getProperty("redis.host"),new Integer(prop.getProperty("redis.port")), Protocol.DEFAULT_TIMEOUT, prop.getProperty("redis.pwd"));
 			Jedis redis = redisPool.getResource();
 			redis.set(sensor.getGateway().concat("_").concat(sensor.getFan()).concat("_HardFailDetected"),"noError");
-			redis.set(sensor.getGateway().concat("_").concat(sensor.getFan()).concat("_Soft_Fail_Detected"),"noError");
-			redis.set(sensor.getGateway().concat("_").concat(sensor.getFan()).concat("_Soft_Fail_Detected_emailSF"),"0");
-			redis.set(sensor.getGateway().concat("_").concat(sensor.getFan()).concat("_Soft_Fail_Detected_emailHF"),"0");
+			redis.set(sensor.getGateway().concat("_").concat(sensor.getFan()).concat("_SoftFailDetected"),"noError");
+			redis.set(sensor.getGateway().concat("_").concat(sensor.getFan()).concat("_SoftFailDetected_emailSF"),"0");
+			redis.set(sensor.getGateway().concat("_").concat(sensor.getFan()).concat("_SoftFailDetected_emailHF"),"0");
 			redis.close();
 			SimpleResponseDTO dto = new SimpleResponseDTO();
 			dto.setResponse("SUCCESS");

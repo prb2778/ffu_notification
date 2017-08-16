@@ -73,7 +73,7 @@ public class TimeSeriesDataQueryHandler extends BaseFactoryIT {
         		authorization = header.getValue();
 			}
         	TenantContext tenant = TenantContextFactory.createQueryTenantContextFromProvidedProperties
-        			("https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+        			("https://tsqs.ice.predix.io/v1/datapoints",
         					authorization,this.PZID,this.tsInjectionWSConfig.getZoneId());
         QueryBuilder builder = null;
         if(params.getIntervalValue()==0){
@@ -247,7 +247,7 @@ public class TimeSeriesDataQueryHandler extends BaseFactoryIT {
         		authorization = header.getValue();
 			}
         	TenantContext tenant = TenantContextFactory.createQueryTenantContextFromProvidedProperties
-        			("https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+        			("https://tsqs.ice.predix.io/v1/datapoints",
         					authorization,this.PZID,this.tsInjectionWSConfig.getZoneId());
         QueryBuilder builder = null;
         if(params.getIntervalValue()==0){
@@ -420,7 +420,7 @@ public class TimeSeriesDataQueryHandler extends BaseFactoryIT {
 //        		authorization = header.getValue();
 //			}
         	TenantContext tenant = TenantContextFactory.createQueryTenantContextFromProvidedProperties
-        			("https://time-series-store-predix.run.aws-usw02-pr.ice.predix.io/v1/datapoints",
+        			("https://tsqs.ice.predix.io/v1/datapoints",
         					authorization,this.PZID,this.tsInjectionWSConfig.getZoneId());
         QueryBuilder builder = null;
         

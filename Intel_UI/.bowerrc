@@ -1,4 +1,5 @@
 {
-  "directory": "public/bower_components"
-
+  "directory": "public/bower_components",
+  "proxy": "http://proxy.fm.intel.com:911",
+  "https_proxy": "http://proxy.fm.intel.com:912"
 }

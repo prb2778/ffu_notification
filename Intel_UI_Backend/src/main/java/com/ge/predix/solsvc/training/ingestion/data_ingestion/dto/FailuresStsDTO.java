@@ -16,9 +16,9 @@ package com.ge.predix.solsvc.training.ingestion.data_ingestion.dto;
  */
 public class FailuresStsDTO {
 	
-	private String result = null;
-	private String value = null;
-	private String units = null;
+	private String result = "NA";
+	private String value = "NA";
+	private String units = "";
 	
 	
 	/**

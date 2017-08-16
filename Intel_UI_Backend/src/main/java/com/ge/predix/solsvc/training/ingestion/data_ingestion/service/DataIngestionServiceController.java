@@ -219,9 +219,11 @@ public class DataIngestionServiceController extends TimerTask
     @RequestMapping(value="/startMonitor",method=RequestMethod.POST,produces = "application/json")
    	public void startMonitor() {
     	try {
+    		log.info("Execute this.dataQueryHandler.startTSMonitor()");
 			this.dataQueryHandler.startTSMonitor();
 		} catch (Exception e) {
-			log.error("Failure in /startTSMonitor POST ", e);
+			e.printStackTrace();
+			log.error("Failure in /startMonitor POST ", e);
 		}
     }
     
@@ -414,15 +416,24 @@ public class DataIngestionServiceController extends TimerTask
 	@Override
 	public void run() {
 		try {
-			log.info("Monitor is working");
-			String url = "https://emailnotifications-app.run.aws-usw02-pr.ice.predix.io/startMonitor";
+			Properties prop = new Properties();
+			String propFileName = "config.properties";
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+			if (inputStream != null) {
+				prop.load(inputStream);
+			} else {
+				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+			}
+			String url = prop.getProperty("monitor.uri");
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpPost post = new HttpPost(url);
 			post.setHeader("Content-Type", "application/json");
 			HttpResponse response = client.execute(post);
+			log.info("Monitor is working with URL ."+url);
 	  		 
 		} catch (Exception e) {
-			log.error("Failure in /startTSMonitor POST ", e);
+			e.printStackTrace();
+			log.error("Failure in /startMonitor POST ", e);
 		}
 		
 	}

@@ -1,4 +1,4 @@
-""" 
+7q0-""" 
 AUTHORS: Patrick Bean + Jeffrey Lentz
 COMPANY: GENERAL ELECTRIC, DIGITAL (GE DIGITAL)
 DATE: 6/01/2017
@@ -11,6 +11,8 @@ DESCRIPTION:--------THIS PROGRAM generate Querie responses from Predix Timeserie
 import requests
 import json
 import pandas as pd
+import numpy as np
+import time
 
          
         
@@ -69,7 +71,7 @@ def getPredixTSData(QueryParams):
                 response = requests.request("POST", url, data=payload, headers=headers)                         
                 data = response.json()               
                 data_df = pd.DataFrame(data['tags'][0]['results'][0]['values'])
-                data_df.columns = ['Timestamp', 'Value', 'Quality']
+                data_df.columns = ['Timestamp','Value', 'Quality']
                 data_df['Tagname'] = data['tags'][0]['name']
                 data_df['DateString'] = pd.to_datetime(data_df['Timestamp']*1000000)                
                 ts = []
@@ -81,7 +83,7 @@ def getPredixTSData(QueryParams):
             except Exception as e:
                 print(e)
                 data_df = pd.DataFrame(np.array(["Tag: "+tag,"No Data Available in Timeseries","From: "+time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(from_date)/1000))+" to: "+time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(to_date)/1000))]))             
-            return data_df     
+            return data_df    
                     # Call to function for retrieving token        
         bearer_token = get_bearer_token()      
         tag_list = get_tag_list()        
@@ -105,8 +107,6 @@ def getPredixTSData(QueryParams):
         
 def getTaglist(bearer_token, TS_URL, zone):
     
-    print("!!!! The ZoneID is " + zone)
-    print("!!!! The ZoneID is " + TS_URL)
     url = TS_URL + "v1/tags"   
     headers = {
         'authorization': "bearer " + bearer_token,
@@ -117,13 +117,10 @@ def getTaglist(bearer_token, TS_URL, zone):
     
     print("Please Hold -- Building TagList from Predix Timeseries")
     response = requests.request("GET", url, headers=headers)
-    jsonResponse = json.loads(response.text)
-    print("!!!!!!!!!! THIS IS THE TAG LIST: " + json.dumps(jsonResponse))
-    
+    jsonResponse = json.loads(response.text)   
     return jsonResponse
         ############# END Query Loop ###################
-                
-        
 
     
     
+

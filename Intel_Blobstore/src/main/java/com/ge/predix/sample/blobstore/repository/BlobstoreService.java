@@ -226,7 +226,6 @@ public class BlobstoreService {
      * Gets the list of available Blobs for the binded bucket from the BlobStore.
      *
      * @return List<BlobFile> List of Blobs
-     * @throws Exception 
      */
     public List<S3Object> get() throws Exception {
         List<S3Object> objs = new ArrayList<>();
@@ -248,6 +247,7 @@ public class BlobstoreService {
         }
 
         return objs;
+    }
     }
 
 
